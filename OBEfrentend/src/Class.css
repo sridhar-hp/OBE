@@ -1,0 +1,27 @@
+h2{
+    color: black;
+}
+.tr{
+   color: black;
+}
+.detiles
+{
+    color: black;
+}
+td{
+    color: #000;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+}
+
+.maincontainer {
+    width: 300px;
+}
+
+.sidebar {
+    width: 100px;
+}

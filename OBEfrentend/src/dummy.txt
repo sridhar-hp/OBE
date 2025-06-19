@@ -1,0 +1,305 @@
+//app.jsx
+//import React from "react";
+//import {BrowserRouter,Routes,Route} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import React ,{ useState } from "react";
+import "./App.css";
+// import Layout from "./component/Layout.jsx";
+//import Layout from "./component/layout.jsx";
+import axios from "axios";
+
+function App() {
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+    const [message, setMessage] = useState("LOGIN");
+    const navigate = useNavigate();
+   const handleLogin = async () => {
+     try {
+   
+   const res = await axios.post("http://localhost:5000/login", {
+  name: name,
+  password: password,
+});
+    if(res.data.success)
+    {
+        navigate("/Layout");
+    }
+    else{
+      setMessage("Login Failed!");
+    }
+  } catch (err) {
+    alert("Something went wrong!");
+    setMessage("Server error");
+  }
+};
+
+  return (
+    <div className="login-container">
+      <div className="login-form">
+          <h3>{message}</h3> {/* ✅ Show message */}
+        <input
+         type="text"
+        placeholder="name"
+        value={name} 
+        onChange={e=>setName(e.target.value)}
+        />
+
+        <input 
+        type="password" 
+        placeholder="password"
+        value={password}
+        onChange={e=> setPassword(e.target.value)}
+/>
+       
+<button onClick={handleLogin}>login</button>
+      </div>
+
+    </div>
+  );
+}
+export default App
+
+
+// src/main.jsx
+import './index.css'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import Path from './Path.jsx';
+import { BrowserRouter } from 'react-router-dom'; // ✅ required
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <BrowserRouter> {/* ✅ wrap App in router */}
+      <Path />
+    </BrowserRouter>
+  </React.StrictMode>
+);
+
+
+//path.jsximport React from "react";
+import App from"./App.jsx";
+import Layout from "./Layout.jsx";
+import Classes from "./Classes.jsx";
+import {Routes,Route} from "react-router-dom";
+//
+function Path() {
+return(
+   <> 
+  
+        <Routes>
+           <Route path="/" element={<App/>}/>
+          <Route path="/Layout" element={<Layout/>}/>
+            <Route path="/Casses" element={<Classes />} />
+       </Routes>
+   
+    </>
+
+);
+}
+export default Path;
+
+
+//Classes.jsx
+import React,{useState,useEffect} from "react";
+import axios from "axios";
+
+function Classes()
+{
+
+    const [staffData,setStaffData]=useState();
+
+    useEffect(()=>{
+        axios.get("http://localhost:5000/classes")
+    .then((res)=>{
+        setStaffData(res.data);
+    })
+   .catch((err)=>{
+   console.error("error in" ,err);
+    });
+    },[]);
+    
+    return(
+        <div>
+
+<h2>👩‍🏫 Staff & Courses</h2>
+  <table border="1" cellPadding="10">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Course</th>
+      </tr>
+    </thead>
+    <tbody>
+      {staffData.map((staff, index) => (
+        <tr key={index}>
+          <td>{staff.name}</td>
+          <td>{staff.course}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+        </div>
+
+    );
+}
+export default Classes;
+
+//server.js
+
+const express = require('express');
+const mysql = require('mysql2');
+const cors = require('cors');
+
+
+const app=express();
+app.use(cors());
+app.use(express.json());
+
+// ✅ 1. MySQL connection setup
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'thirumayil',      // your MySQL password if any
+  database: 'dummy'
+});
+app.post('/login',(req,res)=>{
+    const {name,password}=req.body;//req.body receives the name and password from frontend.
+
+
+    const sql = "SELECT * FROM staff WHERE name = ? AND password = ?";
+  db.query(sql, [name, password], (err, result) => {
+
+    if (err) {
+      res.status(500).send("Error in database");
+    } else if (result.length > 0) {
+      res.send({ success: true, message: "Login success", user: result[0] });
+            
+    } else {
+      res.send({ success: false, message: "Invalid credentials" });
+    }
+  });
+});
+
+// this is classes detiles
+app.get("/staff",(req,res)=>{
+db.query("SELECT * FROM staff",(err, result)=>{
+ if(err) return res.status(500).send({error:"database error"});
+ res.send(result);
+});
+});
+app.listen(5000, () => {
+  console.log('Server running at http://localhost:5000');
+});
+
+
+//Layout.jsx
+import React from "react";
+import { Link,Outlet } from "react-router-dom";
+import "./Layout.css"
+function Layout() {
+return (
+    <div className="layout-container">
+      <div className="sidebar">
+        <img src="your-logo.png" alt="Logo" className="logo" />
+        <h3 className="menu-item">DASHBOARD</h3>
+        <Link to="classes" className="menu-item">
+          CLASSES
+        </Link>
+      </div>
+
+      <div className="main-content">
+        <Outlet /> {/* Render sub-pages here */}
+      </div>
+    </div>
+
+
+);
+}
+export default Layout;
+
+
+//Layout.css
+/* .back img{
+    height: 100px;
+    width: 100px;
+    margin-left: 8px;
+}
+.back{
+    background-color: rgb(23, 132, 4);  
+    height: 100vh;
+    width: 189px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;     /* center items horizontally *
+    gap: 20px; 
+    /* flex-wrap: wrap; 
+}
+ h2{
+     color: rgb(23, 132, 4);
+     border-color: rgb(255, 255, 255);
+     border-style:solid;
+     border: 2px;
+     background-color: rgb(255, 255, 255);
+     border-radius: 10px;
+  margin: 0;
+}
+.right{
+    flex: 1;
+    font-size: 14px;          
+    background-color: #ffffff;     
+    color: rgb(0, 0, 0); 
+    
+    /* display: flex;
+  justify-content: center;
+  align-items: center; 
+  /* height: 100vh;    
+  
+}
+ .maincontainer{
+    display: flex;
+    /* flex-direction: row; 
+    width: 100vw; 
+
+}
+.right p{
+    margin: 10px;
+} */
+/* Layout.css */
+
+.layout-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  background-color: green;
+  width: 200px;
+  padding: 20px;
+  color: white;
+}
+
+.logo {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.menu-item {
+  font-size: 1.2rem;
+  margin: 10px 0;
+  text-decoration: none;
+  color: white;
+}
+
+.menu-item:hover {
+  background-color: darkgreen;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.main-content {
+  padding: 20px;
+  flex-grow: 1;
+  background-color: white;
+}
+
