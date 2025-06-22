@@ -11,7 +11,7 @@ app.use(express.json());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',      // your MySQL password if any
+  password: 'thirumayil',      // your MySQL password if any
   database: 'dummy'
 });
 app.post('/login',(req,res)=>{
@@ -32,13 +32,16 @@ app.post('/login',(req,res)=>{
   });
 });
 
-// this is classes detiles
+// this is classes detiles of all staffe this is not help to localstrage in staff
 app.get("/staff",(req,res)=>{
 db.query("SELECT * FROM staff",(err, result)=>{
  if(err) return res.status(500).send({error:"database error"});
  res.send(result);
 });
 });
+
+
+
 app.listen(5000, () => {
   console.log('Server running at http://localhost:5000');
 });

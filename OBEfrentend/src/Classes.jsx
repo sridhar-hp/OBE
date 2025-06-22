@@ -3,9 +3,9 @@ import axios from "axios";
 import "./Class.css";
 function Classes()
 {
+   const user =JSON.parse(localStorage.getItem("staff"));
 
     const [staffData,setStaffData]=useState([]);
-  const user =JSON.parse(localStorage.getItem("staff"));
     useEffect(()=>{
         axios.get("http://localhost:5000/staff")
     .then((res)=>{
