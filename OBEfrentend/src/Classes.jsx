@@ -5,16 +5,16 @@ function Classes()
 {
    const user =JSON.parse(localStorage.getItem("staff"));
 
-    const [staffData,setStaffData]=useState([]);
-    useEffect(()=>{
-        axios.get("http://localhost:5000/staff")
-    .then((res)=>{
-        setStaffData(res.data);
-    })
-   .catch((err)=>{
-   console.error("error in" ,err);
-    });
-    },[]);
+  //   const [staffData,setStaffData]=useState([]);
+  //   useEffect(()=>{
+  //       axios.get("http://localhost:5000/staff")
+  //   .then((res)=>{
+  //       setStaffData(res.data);
+  //   })
+  //  .catch((err)=>{
+  //  console.error("error in" ,err); these codes or used to fetch all user data 
+  //   });
+  //   },[]);
     
     return(
         <div className="out">
